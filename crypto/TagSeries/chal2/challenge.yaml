@@ -1,0 +1,14 @@
+apiVersion: kctf.dev/v1
+kind: Challenge
+metadata:
+  name: tagseries-2
+spec:
+  deployed: true
+  powDifficultySeconds: 0
+  network:
+    public: false
+  healthcheck:
+    # TIP: disable the healthcheck during development
+    enabled: true
+    image: kind/healthcheck:fa345c710b02b256255e89cc38e57e45fe5906f450b7ba5cf0deb2b8690b4f5b
+  image: kind/challenge:d3cfaf9d9526f87f27e7243040d2fa7e802486fba28ed19110e78ebe14c8ba71

@@ -1,0 +1,469 @@
+########################################################################
+#
+#   algo.pvm
+#   3/9/2024
+#   written by yours truly @HCAdam :)
+#
+########################################################################
+#
+#
+# mem usage:
+#   0: rotl word
+#   1: rotl n
+#   2: &s
+#   3: x
+#   4: y
+#   5: z
+#   6: swap_a
+#   7: swap_b
+#   8: swap_tmp
+#   9: lfsr
+#   10: s[0]
+#   ...
+#   21: s[11]
+#   22: &flag
+#   23: &input
+#   24: flag_ok
+#   25: collatz
+#
+#   32: flag[0]  # NOTE: these are 32-bit words, so 128 chars / 4 == 32 !
+#   ...
+#   63: flag[31]
+#   64: input[0]
+#   95: input[31]
+#
+########################################################################
+
+.entry:
+JUMP main
+
+
+# ----------------------------------------------------------
+
+
+.sub_rotl:
+LOADI 0
+LOADI 1
+SHL
+LOADI 0
+PUSHI 32
+LOADI 1
+SUB
+SHR
+XOR
+STOREI 0
+RETURN
+
+
+# ----------------------------------------------------------
+
+
+.sub_collatz:
+# You know I couldn't leave this out :)
+PUSHI 0     # stack = [ n ]
+LOADI 25    # stack = [ n, x ]
+.sub_collatz__loop_start:
+DUP         # stack = [ n, x, x ]
+PUSHI 1     # stack = [ n, x, x, 1 ]
+GREATER     # stack = [ n, x, (x>1) ]
+JUMP_FALSE sub_collatz__loop_end    # stack = [ n, x ]
+DUP         # stack = [ n, x, x ]
+DUP         # stack = [ n, x, x, x ]
+PUSHI 1     # stack = [ n, x, x, x, 1 ]
+SHL         # stack = [ n, x, x, (2*x) ]
+ADD         # stack = [ n, x, (3*x) ]
+PUSHI 1     # stack = [ n, x, (3*x), 1 ]
+ADD         # stack = [ n, x, ((3*x)+1) ]
+SWAP        # stack = [ n, ((3*x)+1), x ]
+DUP         # stack = [ n, ((3*x)+1), x, x ]
+PUSHI 1     # stack = [ n, ((3*x)+1), x, x, 1 ]
+SHR         # stack = [ n, ((3*x)+1), x, (x>>1) ]
+SWAP        # stack = [ n, ((3*x)+1), (x>>1), x ]
+PUSHI 1     # stack = [ n, ((3*x)+1), (x>>1), x, 1 ]
+AND         # stack = [ n, ((3*x)+1), (x>>1), (x&1) ]
+JUMP_TRUE sub_collatz__no_swap_odd    # stack = [ n, ((3*x)+1), (x>>1) ]
+SWAP        # stack = [ n, (x>>1), ((3*x)+1) ]
+.sub_collatz__no_swap_odd:     # don't swap if (x&1==1) so 3x+1 on top of stack instead
+DISCARD     # stack = [ n, x ]
+SWAP        # stack = [ x, n ]
+PUSHI 1     # stack = [ x, n, 1 ]
+ADD         # stack = [ x, n ]      # n += 1
+SWAP        # stack = [ n, x ]
+JUMP sub_collatz__loop_start    # while (x > 1)
+.sub_collatz__loop_end:
+# stack = [ n, x ]
+DISCARD
+STOREI 25
+RETURN
+
+
+# ----------------------------------------------------------
+
+
+.sub_swap_a_b:
+# store -> [ ..., addr, val ]
+LOADI 6     # stack = [ a ]
+LOADADDI 2  # stack = [ &s[a] ]
+LOADI 7     # stack = [ &s[a], b ]
+LOADADDI 2  # stack = [ &s[a], &s[b] ]
+DUP         # stack = [ &s[a], &s[b], &s[b] ]
+LOAD        # stack = [ &s[a], &s[b], s[b] ]
+STOREI 8    # stack = [ &s[a], &s[b] ],             swap_tmp = s[b]
+LOADI 6     # stack = [ &s[a], &s[b], a ]
+LOADADDI 2  # stack = [ &s[a], &s[b], &s[a] ]
+LOAD        # stack = [ &s[a], &s[b], s[a] ]
+STORE       # stack = [ &s[a], &s[b] ]              s[b] = s[a]
+LOADI 8     # stack = [ &s[a], swap_tmp ]
+STORE       # stack = [ ]                           s[a] = swap_tmp
+RETURN
+
+
+# ----------------------------------------------------------
+
+
+.sub_do_columns:
+# for (int c=0; c<4; c++)
+PUSHI 0     # stack = [ c ]
+# loop body
+.sub_do_columns__loop_start:
+DUP         # stack = [ c, c ]
+LOADADDI 2  # stack = [ c, &s[c] ]
+
+# rotl(s[c], 24) 
+LOAD        # stack = [ c, s[c] ]
+STOREI 0    # stack = [ c ]
+PUSHI 24    # stack = [ c, 24 ]
+STOREI 1    # stack = [ c ]
+CALL sub_rotl   # result in mem[0]
+LOADI 0     # stack = [ c, x ]
+STOREI 3    # stack = [ c ]
+DUP         # stack = [ c, c ]
+
+# y = rotl_u32(s[4 + column],  9)
+PUSHI 4     # stack = [ c, c, 4 ]
+ADD         # stack = [ c, c+4 ]
+LOADADDI 2  # stack = [ c, &s[c+4] ]
+LOAD        # stack = [ c, s[c+4] ]
+STOREI 0    # stack = [ c, ]
+PUSHI 9     # stack = [ c, 9 ]
+STOREI 1    # stack = [ c ]
+CALL sub_rotl
+LOADI 0     # stack = [ c, y ]
+STOREI 4    # stack = [ c ]
+
+# z = s[8 + column]
+DUP         # stack = [ c, c, ]
+PUSHI 8     # stack = [ c, c, 8]
+ADD         # stack = [ c, c+8 ]
+LOADADDI 2  # stack = [ c, &s[c+8] ]
+LOAD        # stack = [ c, z ]
+STOREI 5    # stack = [ c ]
+
+# s[8 + column] = x ^ u32(z << 1) ^ u32((y & z) << 2)
+DUP         # stack = [ c, c ]
+PUSHI 8     # stack = [ c, c, 8 ]
+ADD         # stack = [ c, (c+8) ]
+LOADADDI 2  # stack = [ c, &s[c+8] ]
+LOADI 3     # stack = [ c, &s[c+8], x ]
+LOADI 5     # stack = [ c, &s[c+8], x, z ]
+DUP         # stack = [ c, &s[c+8], x, z, z ]
+PUSHI 1     # stack = [ c, &s[c+8], x, z, z, 1 ]
+SHL         # stack = [ c, &s[c+8], x, z, (z<<1) ]
+SWAP        # stack = [ c, &s[c+8], x, (z<<1), z ]
+LOADI 4     # stack = [ c, &s[c+8], x, (z<<1), z, y ]
+AND         # stack = [ c, &s[c+8], x, (z<<1), (y&z) ]
+PUSHI 2     # stack = [ c, &s[c+8], x, (z<<1), (y&z), 2 ]
+SHL         # stack = [ c, &s[c+8], x, (z<<1), ((y&z)<<2) ]
+XOR         # stack = [ c, &s[c+8], x, ((z<<1)^((y&z)<<2)) ]
+XOR         # stack = [ c, &s[c+8], (x^((z<<1)^((y&z)<<2))) ]
+STORE       # stack = [ c ]
+
+# s[4 + column] = y ^ x           ^ u32((x | z) << 1)
+DUP         # stack = [ c, c ]
+PUSHI 4     # stack = [ c, c, 4 ]
+ADD         # stack = [ c, (c+4) ]
+LOADADDI 2  # stack = [ c, &s[c+4] ]
+LOADI 4     # stack = [ c, &s[c+4], y ]
+LOADI 3     # stack = [ c, &s[c+4], y, x ]
+DUP         # stack = [ c, &s[c+4], y, x, x ]
+LOADI 5     # stack = [ c, &s[c+4], y, x, x, z ]
+OR          # stack = [ c, &s[c+4], y, x, (x|z) ]
+PUSHI 1     # stack = [ c, &s[c+4], y, x, (x|z), 1 ]
+SHL         # stack = [ c, &s[c+4], y, x, ((x|z)<<1) ]
+XOR         # stack = [ c, &s[c+4], y, (x^((x|z)<<1)) ]
+XOR         # stack = [ c, &s[c+4], (y^(x^((x|z)<<1))) ]
+STORE       # stack = [ c ]
+
+# s[    column] = z ^ y           ^ u32((x & y) << 3)
+DUP         # stack = [ c, c ]
+LOADADDI 2  # stack = [ c, &s[c] ]
+LOADI 5     # stack = [ c, &s[c], z ]
+LOADI 4     # stack = [ c, &s[c], z, y ]
+DUP         # stack = [ c, &s[c], z, y, y ]
+LOADI 3     # stack = [ c, &s[c], z, y, y, x ]
+AND         # stack = [ c, &s[c], z, y, (x&y) ]
+PUSHI 3     # stack = [ c, &s[c], z, y, (x&y), 3 ]
+SHL         # stack = [ c, &s[c], z, y, ((x&y)<<3) ]
+XOR         # stack = [ c, &s[c], z, (y^((x&y)<<3)) ]
+XOR         # stack = [ c, &s[c], (z^(y^((x&y)<<3))) ]
+STORE       # stack = [ c ]
+
+# for c in range(4)
+PUSHI 1     # stack = [ c, 1 ]
+ADD         # stack = [ c ], c+=1
+DUP         # stack = [ c, c ]
+PUSHI 4     # stack = [ c, c, 4 ]
+LESS        # stack = [ c, (c<4) ]
+JUMP_TRUE sub_do_columns__loop_start
+
+# stack = [ c ]
+DISCARD     # stack = [ ]
+RETURN      # END: sub_do_columns
+
+
+# ----------------------------------------------------------
+
+
+.sub_do_rounds:
+# for round in range(24, 0, -1):
+PUSHI 24    # stack = [ r ]
+.sub_do_rounds__loop_start:
+CALL sub_do_columns     # stack = [ r ]
+
+# if (round & 3) == 0:    # small swap
+DUP         # stack = [ r, r ]
+PUSHI 3     # stack = [ r, r, 3 ]
+AND         # stack = [ r, (r&3) ]
+DUP         # stack = [ r, (r&3), (r&3) ]
+JUMP_TRUE sub_do_rounds__skip_small_swap
+
+# small swap s[0]<->s[1], s[2]<->s[3]
+PUSHI 0     # stack = [ r, (r&3), 0 ]
+STOREI 6    # stack = [ r, (r&3) ]
+PUSHI 1     # stack = [ r, (r&3), 1 ]
+STOREI 7    # stack = [ r, (r&3) ]
+CALL sub_swap_a_b
+PUSHI 2     # stack = [ r, (r&3), 2 ]
+STOREI 6    # stack = [ r, (r&3) ]
+PUSHI 3     # stack = [ r, (r&3), 3 ]
+STOREI 7    # stack = [ r, (r&3) ]
+CALL sub_swap_a_b
+
+.sub_do_rounds__skip_small_swap:
+# if (round & 3) == 2:    # big swap
+DUP         # stack = [ r, (r&3), (r&3) ]
+PUSHI 2     # stack = [ r, (r&3), (r&3), 2 ]
+EQUAL       # stack = [ r, (r&3), ((r&3)==2) ]
+JUMP_FALSE sub_do_rounds__skip_big_swap
+
+# big swap s[0]<->s[2], s[1]<->s[3]
+PUSHI 0     # stack = [ r, (r&3), 0 ]
+STOREI 6    # stack = [ r, (r&3) ]
+PUSHI 2     # stack = [ r, (r&3), 2 ]
+STOREI 7    # stack = [ r, (r&3) ]
+CALL sub_swap_a_b
+PUSHI 1     # stack = [ r, (r&3), 1 ]
+STOREI 6    # stack = [ r, (r&3) ]
+PUSHI 3     # stack = [ r, (r&3), 3 ]
+STOREI 7    # stack = [ r, (r&3) ]
+CALL sub_swap_a_b
+
+.sub_do_rounds__skip_big_swap:
+# if (round & 3) == 0:    # add round constant
+JUMP_TRUE sub_do_rounds__skip_add_round_const
+
+# s[0] ^= (0x9E377900 | round)
+DUP         # stack = [ r, r ]
+LOADI 2     # stack = [ r, r, &s[0] ]
+SWAP        # stack = [ r, &s[0], r ]
+LOADI 2     # stack = [ r, &s[0], r, &s[0] ]
+LOAD        # stack = [ r, &s[0], r, s[0] ]
+SWAP        # stack = [ r, &s[0], s[0], r ]
+
+# TODO: mask this constant from googling with double XOR
+# PUSHI 40503 # stack = [ r, &s[0], s[0], r, 0x9E37 ]
+# PUSHI 16    # stack = [ r, &s[0], s[0], r, 0x9E37, 16 ]
+# SHL         # stack = [ r, &s[0], s[0], r, 0x9E370000 ]
+# PUSHI 30976 # stack = [ r, &s[0], s[0], r, 0x9E370000, 0x7900 ]
+# OR          # stack = [ r, &s[0], s[0], r, 0x9E377900 ]
+
+PUSHI 36096 # stack = [ r, &s[0], s[0], r, 0x8D00 ]
+PUSHI 4919  # stack = [ r, &s[0], s[0], r, 0x8D00, 0x1337 ]
+XOR         # stack = [ r, &s[0], s[0], r, 0x9E37 ]
+PUSHI 16    # stack = [ r, &s[0], s[0], r, 0x9E37, 16 ]
+SHL         # stack = [ r, &s[0], s[0], r, 0x9E370000 ]
+PUSHI 27191 # stack = [ r, &s[0], s[0], r, 0x9E370000, 0x6A37 ]
+PUSHI 4919  # stack = [ r, &s[0], s[0], r, 0x9E370000, 0x6A37, 0x1337 ]
+XOR         # stack = [ r, &s[0], s[0], r, 0x9E370000, 0x7900 ]
+OR          # stack = [ r, &s[0], s[0], r, 0x9E377900 ]
+
+OR          # stack = [ r, &s[0], s[0], (0x9E377900 | r) ]
+XOR         # stack = [ r, &s[0], (s[0] ^ (0x9E377900 | r)) ]
+STORE       # stack = [ r ]
+
+.sub_do_rounds__skip_add_round_const:
+# do post-decrement and check for zero (24->1 inclusive)
+PUSHI 1     # stack = [ r, 1 ]
+SUB         # stack = [ r ], r-=1
+DUP         # stack = [ r, r ]
+JUMP_TRUE sub_do_rounds__loop_start
+# stack = [ r ]
+DISCARD     # stack = [ ]
+RETURN
+
+
+# ----------------------------------------------------------
+
+
+.sub_lfsr_next:
+
+# Using metacollatz sequence of length 16 (start=62)
+PUSHI 62    # stack = [ n ]
+STOREI 25   # stack = [ ]   # write to collatz state
+.sub_lfsr_next__loop_start:
+LOADI 9     # stack = [ lfsr ]
+DUP         # stack = [ lfsr, lfsr ]
+DUP         # stack = [ lfsr, lfsr, lfsr ]
+PUSHI 2     # stack = [ lfsr, lfsr, lfsr, 2 ]
+SHR         # stack = [ lfsr, lfsr, (lfsr>>2) ]
+SWAP        # stack = [ lfsr, (lfsr>>2), lfsr ]
+DUP         # stack = [ lfsr, (lfsr>>2), lfsr, lfsr ]
+PUSHI 3     # stack = [ lfsr, (lfsr>>2), lfsr, lfsr, 3 ]
+SHR         # stack = [ lfsr, (lfsr>>2), lfsr, (lfsr>>3) ]
+SWAP        # stack = [ lfsr, (lfsr>>2), (lfsr>>3), lfsr ]
+PUSHI 5     # stack = [ lfsr, (lfsr>>2), (lfsr>>3), lfsr, 5 ]
+SHR         # stack = [ lfsr, (lfsr>>2), (lfsr>>3), (lfsr>>5) ]
+XOR         # stack = [ lfsr, (lfsr>>2), ((lfsr>>3)^(lfsr>>5)) ]
+XOR         # stack = [ lfsr, ((lfsr>>2)^(lfsr>>3)^(lfsr>>5)) ]
+XOR         # stack = [ (lfsr^((lfsr>>2)^(lfsr>>3)^(lfsr>>5))) ]
+PUSHI 1     # stack = [ (lfsr^((lfsr>>2)^(lfsr>>3)^(lfsr>>5))), 1 ]
+AND         # stack = [ bit ]
+PUSHI 15    # stack = [ bit, 15 ]
+SHL         # stack = [ (bit<<15) ]
+LOADI 9     # stack = [ (bit<<15), lfsr ]
+PUSHI 1     # stack = [ (bit<<15), lfsr, 1 ]
+SHR         # stack = [ (bit<<15), (lfsr>>1) ]
+OR          # stack = [ lfsr ]   # new lfsr state
+STOREI 9    # stack = [ ]
+# loop if (n != 0)
+CALL sub_collatz
+LOADI 25    # stack = [ n ]
+JUMP_TRUE sub_lfsr_next__loop_start
+# stack = [ ]
+RETURN
+
+
+# ----------------------------------------------------------
+
+
+.sub_encrypt_input:
+# Apply forward Gimli cipher on init'd state and input words array (32x 32-bit words)
+PUSHI 0     # stack = [ i ]
+CALL sub_do_rounds
+.sub_encrypt_input__loop_start:
+DUP         # stack = [ i, i ]
+DUP         # stack = [ i, i, i ]
+LOADADDI 23 # stack = [ i, i, &input[i] ]
+SWAP        # stack = [ i, &input[i], i ]
+LOADI 2     # stack = [ i, &input[i], i, &s[0] ]
+LOAD        # stack = [ i, &input[i], i, s[0] ]
+SWAP        # stack = [ i, &input[i], s[0], i ]
+LOADADDI 23 # stack = [ i, &input[i], s[0], &input[i] ]
+LOAD        # stack = [ i, &input[i], s[0], input[i] ]
+XOR         # stack = [ i, &input[i], (s[0]^input[i]) ]
+DUP         # stack = [ i, &input[i], (s[0]^input[i]), (s[0]^input[i]) ]
+LOADI 2     # stack = [ i, &input[i], (s[0]^input[i]), (s[0]^input[i]), &s[0] ]
+SWAP        # stack = [ i, &input[i], (s[0]^input[i]), &s[0], (s[0]^input[i]) ]
+STORE       # stack = [ i, &input[i], (s[0]^input[i]) ]
+STORE       # stack = [ i ]
+CALL sub_do_rounds  # gimli encrypt
+PUSHI 1     # stack = [ i, 1 ]
+ADD         # stack = [ i ]     # i += 1
+DUP         # stack = [ i, i ]
+PUSHI 32    # stack = [ i, i, 32 ]
+GREATER_EQUAL # stack = [ i, (i>=32) ]  # invert conditional for fun
+JUMP_FALSE sub_encrypt_input__loop_start
+# stack = [ i ]
+DISCARD
+RETURN
+
+
+# ----------------------------------------------------------
+
+
+.sub_init_cipher_state:
+PUSHI 0     # stack = [ i ]
+# LFSR seed
+PUSHI 6502  # stack = [ i, 6502 ]
+STOREI 9    # stack = [ i ]
+.sub_init_cipher_state__loop_start:
+DUP         # stack = [ i, i ]
+LOADADDI 2  # stack = [ i, &s[i] ]
+CALL sub_lfsr_next
+LOADI 9     # stack = [ i, &s[i], lfsr ]
+PUSHI 16    # stack = [ i, &s[i], lfsr, 16 ]
+SHL         # stack = [ i, &s[i], (lfsr<<16) ] 
+CALL sub_lfsr_next
+LOADI 9     # stack = [ i, &s[i], (lfsr<<16), lfsr ]
+OR          # stack = [ i, &s[i], lfsr_32 ]
+STORE       # stack = [ i ]
+PUSHI 1     # stack = [ i, 1 ]
+ADD         # stack = [ i ]     # i += 1
+DUP         # stack = [ i, i ]
+PUSHI 12    # stack = [ i, i, 12 ]
+LESS        # stack = [ i, (i<12) ]
+JUMP_TRUE sub_init_cipher_state__loop_start
+# stack = [ i ]
+DISCARD
+RETURN
+
+
+# ----------------------------------------------------------
+
+
+.sub_check_flag:
+PUSHI 0     # stack = [ n ]
+.sub_check_flag__loop_start:
+DUP         # stack = [ n, n ]
+DUP         # stack = [ n, n, n ]
+LOADADDI 22 # stack = [ n, n, &flag[n] ]
+LOAD        # stack = [ n, n, flag[n] ]
+SWAP        # stack = [ n, flag[n], n ]
+LOADADDI 23 # stack = [ n, flag[n], &enc[n] ]
+LOAD        # stack = [ n, flag[n], enc[n] ]
+XOR         # stack = [ n, (flag[n]^enc[n]) ]
+LOADI 24    # stack = [ n, (flag[n]^enc[n]), flag_ok ]
+OR          # stack = [ n, flag_ok ]
+STOREI 24   # stack = [ n ]
+PUSHI 1     # stack = [ n, 1 ]
+ADD         # stack = [ n ]     # n += 1
+DUP         # stack = [ n, n ]
+PUSHI 32    # stack = [ n, n, 32 ]
+LESS        # stack = [ n, (n<32) ]
+JUMP_TRUE sub_check_flag__loop_start
+# stack = [ n ]
+DISCARD
+RETURN
+
+
+# ----------------------------------------------------------
+
+
+.main:
+
+PUSHI 10
+STOREI 2
+PUSHI 32
+STOREI 22
+PUSHI 64
+STOREI 23
+
+CALL sub_init_cipher_state
+CALL sub_encrypt_input
+CALL sub_check_flag
+
+# return (flag_ok == 0) to hide XOR result
+LOADI 24    
+PUSHI 0
+EQUAL
+VMEXIT 0

@@ -1,0 +1,261 @@
+# wctf{pr30ccup13d_w1+h_wh3+h3r_0r_n0t_1_c0uld}
+
+# calling convention
+# parameters: reg0, reg1
+# return: reg0
+# caller save: reg2, reg3, reg4, reg5
+# callee save: reg6, reg7
+
+start:
+mov 6 0
+
+loop:
+push 6
+pop 1
+mov 0 101
+call pow
+read_in 1
+call xor
+push 0
+pop 7
+push 6
+pop 0
+call dat
+jeq 0 7 ok
+jmp incorrect
+
+ok:
+mov 7 1
+add 6 6 7
+mov 7 45
+jle 6 7 loop
+
+jmp correct
+hlt
+
+#######
+# XOR #
+#######
+
+xor:
+# arg1 = r0
+# arg2 = r1
+# r2 = acc
+# r3 = power
+# r4 = r0 & power
+# r5 = r1 & power
+# return r0
+mov 3 64
+mov 2 0
+
+xor_loop:
+div 4 0 3
+div 5 1 3
+add 4 4 5
+mov 5 2
+mod 4 4 5
+mov 5 0
+jeq 4 5 xor_endif
+
+add 2 2 3
+
+xor_endif:
+mov 4 2
+div 3 3 4
+mov 4 0
+jeq 3 4 xor_end
+jmp xor_loop
+
+xor_end:
+push 2
+pop 0
+ret
+
+# #######
+# # POW #
+# #######
+
+pow:
+# arg1 = r0
+# arg2 = r1
+# return r0
+# r2 = base
+# r3 = scratch
+push 0
+pop 2
+mov 0 1
+
+pow_loop:
+mov 3 0
+jeq 1 3 pow_end
+mul 0 0 2
+mov 3 128
+mod 0 0 3
+mov 3 1
+sub 1 1 3
+
+jmp pow_loop
+
+pow_end:
+ret
+
+########
+# DATA #
+########
+
+dat:
+# arg1 = r0
+# return r0
+# scratch r1
+# get PC lol
+call jt
+jt:
+pop 1
+mov 2 7
+add 1 1 2
+add 1 1 0
+add 1 1 0
+push 1
+ret
+
+# beginning of jump table
+mov 0 118
+ret
+mov 0 6
+ret
+mov 0 45
+ret
+mov 0 123
+ret
+mov 0 10
+ret
+mov 0 101
+ret
+mov 0 59
+ret
+mov 0 126
+ret
+mov 0 81
+ret
+mov 0 38
+ret
+mov 0 90
+ret
+mov 0 8
+ret
+mov 0 33
+ret
+mov 0 68
+ret
+mov 0 26
+ret
+mov 0 73
+ret
+mov 0 30
+ret
+mov 0 82
+ret
+mov 0 40
+ret
+mov 0 118
+ret
+mov 0 89
+ret
+mov 0 10
+ret
+mov 0 126
+ret
+mov 0 101
+ret
+mov 0 18
+ret
+mov 0 46
+ret
+mov 0 17
+ret
+mov 0 14
+ret
+mov 0 99
+ret
+mov 0 106
+ret
+mov 0 89
+ret
+mov 0 31
+ret
+mov 0 94
+ret
+mov 0 11
+ret
+mov 0 105
+ret
+mov 0 105
+ret
+mov 0 46
+ret
+mov 0 36
+ret
+mov 0 22
+ret
+mov 0 46
+ret
+mov 0 81
+ret
+mov 0 48
+ret
+mov 0 85
+ret
+mov 0 25
+ret
+mov 0 44
+ret
+
+###########
+# STRINGS #
+###########
+
+correct:
+mov 1 99
+write_out 1
+mov 1 111
+write_out 1
+mov 1 114
+write_out 1
+mov 1 114
+write_out 1
+mov 1 101
+write_out 1
+mov 1 99
+write_out 1
+mov 1 116
+write_out 1
+mov 1 33
+write_out 1
+hlt
+
+incorrect:
+mov 1 105
+write_out 1
+mov 1 110
+write_out 1
+mov 1 99
+write_out 1
+mov 1 111
+write_out 1
+mov 1 114
+write_out 1
+mov 1 114
+write_out 1
+mov 1 101
+write_out 1
+mov 1 99
+write_out 1
+mov 1 116
+write_out 1
+mov 1 32
+write_out 1
+mov 1 58
+write_out 1
+mov 1 40
+write_out 1
+hlt

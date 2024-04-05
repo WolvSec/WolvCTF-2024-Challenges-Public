@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  make1-madesense :
+    build: .
+    image: madesense:1.0
+    container_name: madesense 
+    init: true
+    restart: always
+    ports:
+      - 5000:5000
+

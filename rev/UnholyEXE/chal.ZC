@@ -1,0 +1,1399 @@
+// Flag: wctf{rip_T3rry_D4v1s}
+// fpwd: losethos_reborn_w_net
+I64 vx1 = 0, vy1 = 0, vx2 = 0, vy2 = 0;
+U8			 buffer_size	= 1;
+U8			*buffer			= CAlloc(buffer_size);
+CTCPSocket	*tcp			= TCPSocket(AF_INET);
+CTCPSocket	*new;
+CSocketAddressIPV4 *socket_addr = CAlloc(sizeof(CSocketAddressIPV4));
+tcp->timeout = TCP_TIMEOUT * 30;
+socket_addr->port			 = EndianU16(54336);
+socket_addr->family			 = AF_INET;
+socket_addr->address.address = INADDR_ANY;
+
+"\nTrying to bind socket.\n";
+if (TCPSocketBind(tcp, socket_addr) == 0)
+	"\nSocket bound.\n";
+else
+	"\nFailed to bind socket.\n";
+
+"\nTrying to listen on socket.\n";
+if (TCPSocketListen(tcp, 5) == 0)
+	"\nSocket now listening.\n";
+else
+	"\nFail to listen on socket.\n";
+
+"\nTrying to accept a connection\n";
+if ((new = TCPSocketAccept(tcp)) != NULL)
+	"\nNew socket connected.\n";
+else
+{
+	"\nFailed to accept.\n";
+}
+
+U8 TCPRecv()
+{
+	"\nTrying to Receive data\n";
+
+	if (TCPSocketReceive(new, buffer, buffer_size) > 0)
+		"\nData received\n";
+	else
+		"\nData not received\n";
+
+	"\n";
+
+	return 1;
+}
+
+U0 RandomizeOffsets()
+{
+	vx1 = SignI64(RandI64);
+	vy1 = SignI64(RandI64);
+	vx2 = SignI64(RandI64);
+	vy2 = SignI64(RandI64);
+}
+
+U0 Main()
+{
+	TCPRecv;
+
+	I64 ENTRY = buffer[0];
+
+	I64 OFFSET = 0;
+
+	I64 y_top = 10, y_middle = 25, y_bottom = 40;
+
+	I64 x1 = 5, y1 = y_middle, x2 = 15, y2 = y_bottom;
+	
+	CDC *dc = DCAlias;
+
+	dc->color = 0;
+
+	// ******************* START w *******************
+
+	// Left down line of 'w'
+
+	OFFSET = 108;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+	
+	GrLine(dc, x1, y1, x2, y2);
+
+	// Left up line of 'w'
+
+	x1 = x2;
+	y1 = y2;
+	x2 += 10;
+	y2 = y_middle;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// Right down line of 'w'
+
+	x1 = x2;
+	y1 = y2;
+	x2 += 10;
+	y2 = y_bottom;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// Right up line of 'w'
+
+	x1 = x2;
+	y1 = y2;
+	x2 += 10;
+	y2 = y_middle;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End w *********************
+
+	x2 += 10;
+
+	// ******************* START c *******************
+
+	// top line of 'c'
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2;
+	y1 = y2;
+	x2 += 10;
+
+	OFFSET = 111;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// left line of 'c'
+
+	x2 = x1;
+	y2 = y_bottom;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// bottom line of 'c'
+
+	y1 = y_bottom;
+	x2 += 10;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End c *********************
+
+	x2 += 10;
+
+	// ******************* START t *******************
+
+	// vertical line of t
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2 + 5;
+	y1 = y_top;
+	x2 += 5;
+	y2 = y_bottom;
+
+	OFFSET = 115;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// horizontal line of t
+
+	x1 = x2 - 5;
+	y1 = y_middle;
+	x2 += 5;
+	y2 = y_middle;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End t *********************
+
+	x2 += 10;
+
+	// ******************* START f *******************
+
+	// top horizontal line of f
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2 + 5;
+	y1 = y_top;
+	x2 += 10;
+	y2 = y1;
+
+	OFFSET = 101;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// vertical line of f
+
+	x2 -= 5;
+	y2 = y_bottom;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// middle horizontal line of f
+
+	x1 -= 5;
+	y1 = y_middle;
+	x2 += 5;
+	y2 = y_middle;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End f *********************
+
+	x2 += 10;
+
+	// ******************* START { *******************
+
+	// top horizontal line of {
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+	
+	x1 = x2 + 5;
+	y1 = y_top;
+	x2 += 10;
+	y2 = y1 + 1;
+
+	OFFSET = 116;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// line down from top of { halfway to middle
+
+	x1 = x2 - 5;
+	y1 = y2;
+	x2 = x1;
+	y2 = y_middle - 2;
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// line back to tip of {
+	
+	x1 = x2;
+	y1 = y2;
+	x2 = x1 - 5;
+	y2 = y_middle;
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// line back from tip of { halfway to bottom
+
+	x1 = x2;
+	y1 = y2;
+	x2 = x1 + 5;
+	y2 = y_middle + 2;
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// line down from bottom of { to bottom
+
+	x1 = x2;
+	y1 = y2;
+	x2 = x1;
+	y2 = y_bottom;
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// bottom horizontal line of {
+
+	x1 = x2;
+	y1 = y2;
+	x2 += 5;
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End { *********************
+
+	x2 += 10;
+
+	// ******************* START r *******************
+
+	// vertical line of r
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2 + 2;
+	y1 = y_bottom;
+	x2 = x1;
+	y2 = y_middle;
+
+	OFFSET = 104;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// horizontal line of r
+
+	x1 = x2;
+	y1 = y2;
+	x2 += 8;
+	y2 = y2;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End r *********************
+
+	x2 += 10;
+
+	// ******************* START i *******************
+
+	// vertical line of i
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2 + 5;
+	y1 = y_middle;
+	x2 += 5;
+	y2 = y_bottom;
+
+	OFFSET = 111;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End i *********************
+
+	x2 += 10;
+
+	// ******************* START p *******************
+
+	// vertical line of p
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2 + 2;
+	y1 = y_bottom + 15;
+	x2 = x1;
+	y2 = y_middle;
+
+	OFFSET = 115;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// bottom horizontal line of p
+
+	x1 = x2;
+	y1 = y_bottom;
+	x2 += 8;
+	y2 = y_bottom;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// top horizontal line of p
+
+	x1 = x1;
+	y1 = y_middle;
+	x2 = x2;
+	y2 = y_middle;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// other vertical line of p
+
+	x1 = x2;
+	y1 = y_bottom;
+	x2 = x1;
+	y2 = y_middle;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End p *********************
+
+	x2 += 10;
+
+	// ******************* START _ *******************
+
+	// horizontal line of _
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2;
+	y1 = y_bottom;
+	x2 += 10;
+	y2 = y_bottom;
+
+	OFFSET = 95;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End _ *********************
+
+	x2 += 10;
+
+	// ******************* START T *******************
+
+	// vertical line of T
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2 + 5;
+	y1 = y_top;
+	x2 += 5;
+	y2 = y_bottom;
+
+	OFFSET = 114;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// horizontal line of T
+
+	x1 = x2 - 8;
+	y1 = y_top;
+	x2 += 8;
+	y2 = y_top;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End T *********************
+
+	x2 += 10;
+
+	// ******************* START 3 *******************
+
+	// top horizontal line of 3
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2;
+	y1 = y_top;
+	x2 += 10;
+	y2 = y1;
+
+	OFFSET = 101;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// middle horizontal line of 3
+
+	y1 = y_middle;
+	y2 = y_middle;
+
+	RandomizeOffsets();
+
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// bottom horizontal line of 3
+
+	y1 = y_bottom;
+	y2 = y_bottom;
+
+	RandomizeOffsets();
+
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// right vertical line of 3
+
+	x1 = x2;
+	y1 = y_top;
+	x2 = x1;
+	y2 = y_bottom;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End 3 *********************
+
+	x2 += 10;
+
+	// ******************* START r *******************
+
+	// vertical line of r
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2 + 2;
+	y1 = y_bottom;
+	x2 = x1;
+	y2 = y_middle;
+
+	OFFSET = 98;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// horizontal line of r
+
+	x1 = x2;
+	y1 = y2;
+	x2 += 8;
+	y2 = y2;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End r *********************
+
+	x2 += 10;
+
+	// ******************* START r *******************
+
+	// vertical line of r
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2 + 2;
+	y1 = y_bottom;
+	x2 = x1;
+	y2 = y_middle;
+
+	OFFSET = 111;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// horizontal line of r
+
+	x1 = x2;
+	y1 = y2;
+	x2 += 8;
+	y2 = y2;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End r *********************
+
+	x2 += 10;
+
+	// ******************* START y *******************
+
+	// left diagonal line of y
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2;
+	y1 = y_middle;
+	x2 += 5;
+	y2 = y_bottom;
+
+	OFFSET = 114;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// right diagonal line of y
+
+	x1 += 10;
+	y1 = y_middle;
+	x2 -= 5;
+	y2 = y_bottom + 15;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	x2 = x1;
+
+	// ******************* End y *********************
+
+	x2 += 10;
+
+	// ******************* START _ *******************
+
+	// horizontal line of _
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2;
+	y1 = y_bottom;
+	x2 += 10;
+	y2 = y_bottom;
+
+	OFFSET = 110;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End _ *********************
+
+	x2 += 10;
+
+	// ******************* START D *******************
+
+	// left vertical line of D
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2;
+	y1 = y_bottom;
+	x2 = x1;
+	y2 = y_top;
+
+	OFFSET = 95;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// top horizontal line of D
+
+	x1 = x2;
+	y1 = y_top;
+	x2 += 10;
+	y2 = y_top + 6;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// right vertical line of D
+
+	x1 = x2;
+	y1 = y2;
+	x2 = x1;
+	y2 = y_bottom - 6;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// bottom horizontal line of D
+
+	x1 = x2;
+	y1 = y2;
+	x2 -= 10;
+	y2 = y_bottom;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	x2 = x1;
+
+	// ******************* End D *********************
+
+	x2 += 10;
+
+	// ******************* START 4 *******************
+
+	// vertical line of 4
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2 + 5;
+	y1 = y_top;
+	x2 += 5;
+	y2 = y_bottom;
+
+	OFFSET = 119;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// horizontal line of 4
+
+	x1 = x2 - 8;
+	y1 = y_middle;
+	x2 += 8;
+	y2 = y_middle;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// Diagonal line of 4
+
+	x2 -= 8;
+	y2 = y_top;
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	x2 += 8;
+
+	// ******************* End 4 *********************
+
+	x2 += 10;
+
+	// ******************* START v *******************
+
+	// left down line of v
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2;
+	y1 = y_middle;
+	x2 += 5;
+	y2 = y_bottom;
+
+	OFFSET = 95;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// right down line of v
+
+	x1 = x2;
+	y1 = y2;
+	x2 += 5;
+	y2 = y_middle;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End v *********************
+
+	x2 += 10;
+
+	// ******************* START 1 *******************
+
+	// vertical line of 1
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2 + 5;
+	y1 = y_bottom;
+	x2 += 5;
+	y2 = y_top;
+
+	OFFSET = 110;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// diagonal line of 1
+
+	x1 -= 5;
+	y1 = y_top + 3;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// bottom horizontal line of 1
+
+	y1 = y_bottom;
+	x2 += 5;
+	y2 = y_bottom;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End 1 *********************
+
+	x2 += 10;
+
+	// ******************* START s *******************
+
+	// top horizontal line of s
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2;
+	y1 = y_middle;
+	x2 += 10;
+	y2 = y_middle;
+
+	OFFSET = 101;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// left vertical line of s
+
+	x2 = x1;
+	y2 = y_middle + 6;
+
+	RandomizeOffsets();
+
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// middle horizontal line of s
+
+	y1 = y2;
+	x2 += 10;
+
+	RandomizeOffsets();
+
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// right vertical line of s
+
+	x1 = x2;
+	y1 = y2;
+	x2 = x1;
+	y2 = y_bottom;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+	x2 = ClampI64(x2 + vx2, 0, Fs->pix_width - 1);
+	y2 = ClampI64(y2 + vy2, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// bottom horizontal line of s
+
+	x1 -= 10;
+	y1 = y_bottom;
+
+	RandomizeOffsets();
+
+	x1 = ClampI64(x1 + vx1, 0, Fs->pix_width - 1);
+	y1 = ClampI64(y1 + vy1, 0, Fs->pix_height - 1);
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End s *********************
+
+	x2 += 10;
+
+	// ******************* START } *******************
+
+	// top horizontal line of }
+
+	TCPRecv;
+
+	ENTRY = buffer[0];
+
+	x1 = x2 + 5;
+	y1 = y_top;
+	x2 += 10;
+	y2 = y1 + 1;
+
+	OFFSET = 116;
+
+	x1 ^= OFFSET;
+	y1 ^= OFFSET;
+	x2 ^= OFFSET;
+	y2 ^= OFFSET;
+
+	x1 ^= ENTRY;
+	y1 ^= ENTRY;
+	x2 ^= ENTRY;
+	y2 ^= ENTRY;
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// line down from top of } halfway to middle
+
+	x1 = x2;
+	y1 = y2;
+	x2 = x1;
+	y2 = y_middle - 2;
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// line back to tip of }
+
+	x1 = x2;
+	y1 = y2;
+	x2 = x1 + 5;
+	y2 = y_middle;
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// line back from tip of } halfway to bottom
+
+	x1 = x2;
+	y1 = y2;
+	x2 -= 5;
+	y2 = y_middle + 2;
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// line down from bottom of } to bottom
+
+	x1 = x2;
+	y1 = y2;
+	x2 = x1;
+	y2 = y_bottom;
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// bottom horizontal line of }
+
+	x1 = x2;
+	y1 = y2;
+	x2 -= 5;
+
+	GrLine(dc, x1, y1, x2, y2);
+
+	// ******************* End } *********************
+
+	while (!CharScan) {
+		Sleep(1);
+	}
+	DCFill(dc);
+	DCDel(dc);
+}
+
+Main;

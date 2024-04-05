@@ -1,0 +1,7 @@
+image: emilienmottet/nasm
+
+aliases:
+  build:
+    script:
+      - nasm -felf64 shelleater.asm -o chal.o
+      - ld -z execstack -o chal chal.o

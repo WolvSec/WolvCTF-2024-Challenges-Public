@@ -1,0 +1,14 @@
+apiVersion: kctf.dev/v1
+kind: Challenge
+metadata:
+  name: cscript
+spec:
+  deployed: true
+  powDifficultySeconds: 0
+  network:
+    public: false
+  healthcheck:
+    # TIP: disable the healthcheck during development
+    enabled: true
+    image: kind/healthcheck:3f20ab0800a9cc02beb6e392b56b648fd14e12fbaa1795edbbb4f1713ba0dc27
+  image: kind/challenge:9ee97f36d39f9299860b2b9ccc508c2b2409ec51aeed043aad587914b6ae1ac5

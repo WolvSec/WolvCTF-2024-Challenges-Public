@@ -1,0 +1,12 @@
+apiVersion: kctf.dev/v1
+kind: Challenge
+metadata:
+  name: babypwn
+spec:
+  deployed: true
+  powDifficultySeconds: 0
+  network:
+    public: true
+  healthcheck:
+    enabled: false
+  image: eu.gcr.io/kctf-wolvctf-2024/babypwn-challenge:a96b02bff582169879a32bb6aeda9c2ed801e933329c6e113f805c44a5028b36

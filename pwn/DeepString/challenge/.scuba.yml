@@ -1,0 +1,6 @@
+image: gcc:9.3.0
+
+aliases:
+  build:
+    script:
+      - gcc vuln.c -no-pie -w -z norelro -fstack-protector-all -O0 -o chal

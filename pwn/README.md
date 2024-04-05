@@ -1,0 +1,1 @@
+Reminder to run `find . -type f -print0 | xargs -0 dos2unix` on the pwn folder to avoid kctf issues with \r\n

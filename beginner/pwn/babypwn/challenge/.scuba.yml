@@ -1,0 +1,6 @@
+image: gcc:8
+
+aliases:
+  build:
+    script:
+      - gcc -Wno-deprecated-declarations -no-pie -fno-stack-protector -o chal main.c -Wall -Werror -std=c89

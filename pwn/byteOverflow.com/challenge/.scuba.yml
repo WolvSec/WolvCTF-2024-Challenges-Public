@@ -1,0 +1,7 @@
+image: gcc:9.3.0
+
+aliases:
+  build:
+    script:
+      - gcc vuln.c  -z execstack -z now -fno-stack-protector -w -o chal 
+

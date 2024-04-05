@@ -1,0 +1,14 @@
+`0_0$:,_`
+
+Ok... explanation time.
+
+Coming from the left...
+`0_` just moves us to the right and is the beginning of the loop.
+
+`0$` does nothing.
+`:` duplicates the character, and `,` prints it. The character isn't 0, so the rightmost `_` goes left.
+
+Coming from the right:
+`,` prints the second character.
+`:` duplicates the third character, and `$` drops it.
+`0_` brings us back to the right.

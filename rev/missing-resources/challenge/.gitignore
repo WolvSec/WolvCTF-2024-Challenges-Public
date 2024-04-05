@@ -1,0 +1,6 @@
+.vs
+.DS_Store
+packages/
+x64/
+Debug/
+Release/

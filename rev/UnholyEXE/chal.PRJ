@@ -1,0 +1,25 @@
+#exe {
+	Cd(__DIR__);;
+	Option(OPTf_WARN_PAREN,		ON);
+	Option(OPTf_WARN_DUP_TYPES,	ON);
+	Option(OPTf_KEEP_PRIVATE,	ON);
+}
+#include "/Kernel/KernelA.HH"
+#include "/Compiler/CompilerA.HH"
+#exe {Option(OPTf_EXTERNS_TO_IMPORTS,	ON);};
+#include "/Kernel/KernelB.HH"
+#include "/Kernel/KernelC.HH"
+#include "/Compiler/CompilerB.HH"
+#include "/Home/Sockets.HH"
+#include "/Home/BST.HH"
+#include "/Home/Net/Protocols/TCP/TCP.HH"
+extern CTCPSocket TCPSocket(U16 domain=AF_UNSPEC);
+extern I64 TCPSocketBind(CTCPSocket *tcp_socket, CSocketAddressStorage *address);
+extern I64 TCPSocketListen(CTCPSocket *tcp_socket, I64 backlog_size);
+extern CTCPSocket *TCPSocketAccept(CTCPSocket *tcp_socket);
+extern I64 TCPSocketReceive(CTCPSocket *tcp_socket, U8 *buffer, I64 length);
+extern CDC *DCAlias(CDC *dc=NULL, CTask *task=NULL);
+extern Bool GrLine(CDC *dc, I64 x1, I64 y1, I64 x2, I64 y2, I64 step=1, I64 start=0);
+extern U0 DCFill(CDC *dc=NULL, CColorROPU32 val=TRANSPARENT);
+extern U0 DCDel(CDC *dc);
+#include "chal"

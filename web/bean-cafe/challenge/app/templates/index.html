@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to the Bean and Leaf Cafe</title>
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Bean and Leaf Cafe</h1>
+        <p>Discover the place where bean and nature enthusiasts meet.</p>
+    </header>
+
+    <section>
+        <h2>Authentication for Special Access</h2>
+        <p>To gain special access to our flag-flavored coffee, we require a unique form of authentication. Please submit two identical images:</p>
+        <ul>
+            <li>The first image should be of a healthy bean leaf.</li>
+            <li>The second image needs to be a leaf with rust spots.</li>
+        </ul>
+        <p>We'll verify that these two pictures are exactly the same, ensuring authenticity and granting you exclusive access.</p>
+        
+        <form action="/submit" method="POST" enctype="multipart/form-data">
+            <div>
+                <label for="healthyLeaf">Upload an image of a healthy bean leaf:</label>
+                <input type="file" id="healthyLeaf" name="healthyLeaf" accept="image/*" required>
+            </div>
+
+            <div>
+                <label for="rustLeaf">Upload an image of a leaf with rust spots:</label>
+                <input type="file" id="rustLeaf" name="rustLeaf" accept="image/*" required>
+            </div>
+
+            <button type="submit">Submit Images for Authentication</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Bean and Leaf Cafe. Secured by Magic Dust 5 technology. All rights reserved.</p>
+
+        <!-- TO DO: Update outdated MD5 scan system -->
+    </footer>
+</body>
+</html>
