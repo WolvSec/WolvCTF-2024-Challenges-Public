@@ -64,11 +64,11 @@
 - [Site Secret](forensics/site-secret) [48 Solves]
 
 ## OSINT
-- [WOLPHV I: Reconnaissance](osint/wolphv1) [213 Solves]
-- [WOLPHV II: Infiltrate](osint/wolphv2) [93 Solves]
-- [WOLPHV III: p1nesh4dow48](osint/wolphv3) [53 Solves]
-- [WOLPHV IV: d4wgbyte262](osint/wolphv4) [32 Solves]
-- [WOLPHV V: luvh4ck573](osint/wolphv5) [8 Solves]
+- [WOLPHV I: Reconnaissance](OSINT/wolphv1) [213 Solves]
+- [WOLPHV II: Infiltrate](OSINT/wolphv2) [93 Solves]
+- [WOLPHV III: p1nesh4dow48](OSINT/wolphv3) [53 Solves]
+- [WOLPHV IV: d4wgbyte262](OSINT/wolphv4) [32 Solves]
+- [WOLPHV V: luvh4ck573](OSINT/wolphv5) [8 Solves]
 
 ## Misc
 - [befuddled1](misc/befuddled1) [58 Solves]
