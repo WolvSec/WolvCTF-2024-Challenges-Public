@@ -50,7 +50,7 @@
 
 ## Pwn
 - [byteOverflow.com](pwn/byteoverflow) [60 Solves]
-- [CScript](pwn/cscript) [4 Solves]
+- [CScript](pwn/CScript) [4 Solves]
 - [DeepString](pwn/deepstring) [44 Solves]
 - Game, CET, Match [11 Solves]
 - netpeek [2 Solves]
